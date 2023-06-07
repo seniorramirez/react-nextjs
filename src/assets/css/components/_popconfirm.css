@@ -1,0 +1,9 @@
+.ant-popconfirm-buttons button {
+    margin-left: 8px;
+
+    @apply bg-slate-200 rounded-sm border-slate-200 text-slate-700;
+
+    &.ant-btn-primary{
+        @apply bg-primary-600 text-white;
+    }
+}

@@ -1,5 +1,5 @@
 .content {
-    padding: 0px 22px;
+    padding: 30px 22px;
     border-radius: 1.3rem;
     @apply min-w-0 min-h-screen bg-white shadow flex-1 pb-10 shadow-sm dark:bg-slate-700;
    

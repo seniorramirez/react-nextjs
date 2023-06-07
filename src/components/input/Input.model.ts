@@ -5,5 +5,7 @@ export interface InputProps {
     value: string,
     onChange?: any,
     error: string,
-    classname?: string
+    classname?: string,
+    name?: string,
+    customerror?: string
 }

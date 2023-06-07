@@ -2,113 +2,140 @@
 
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
-import { collection, doc, setDoc,getDocs } from "firebase/firestore";
 import { firestore }  from '@/utils/firebase/Firebase';
 import ModalNewUser from '@/components/modal/ModalNewUser';
-
-interface ColumnDataType {
-  key: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  company: string;
-}
-
-export async function getAllUser(usersCollection: any) {
-  const data = await getDocs(usersCollection);
-
-  const new_data: ColumnDataType[] = [];
-
-  data.forEach(elm => {
-    let row:any = elm.data();
-    let key = elm.id;
-    new_data.push({
-      key: key,
-      firstName: row.first_name,
-      lastName: row.last_name,
-      email: row.email,
-      company: row.company
-    });
-  });
-
-  return new_data;
-}
+import { Table,Popconfirm } from "antd"; 
+import { getAllUser,deleteUser } from "@/api/users/users";
+import { UserType } from "@/api/users/users.model";
+import { notification } from 'antd';
 
 export default function IndexPage() {
 
-  const usersCollection = collection(firestore, "users");
-
-  const [data_columns,setDataColumn] = useState([]);
+  const [data_columns,setDataColumn] = useState<UserType[]>([]);
   const [open_modal_new_user,setOpenModalNewUser] = useState(false);
+  const [table_loading,setTableLoading] = useState(true);
+  const [user_selected,setUserSelected] = useState<UserType|null>(null);
+
+  const columns_example = [ 
+    { 
+      key: "first_name", 
+      title: "Nombre", 
+      dataIndex: "first_name", 
+    }, 
+    { 
+      key: "last_name", 
+      title: "Apellido", 
+      dataIndex: "last_name", 
+    }, 
+    { 
+      key: "email", 
+      title: "Correo", 
+      dataIndex: "email", 
+    }, 
+    { 
+      key: "company", 
+      title: "Compañia", 
+      dataIndex: "company", 
+    }, 
+   
+    { 
+      key: "options", 
+      title: "Acciones", 
+      dataIndex: "options", 
+      render: (text:any,record:UserType) => (
+        <div className='flex flex-row'>
+          <a className='mr-2 ' onClick={() => { openModalEdit(record)}}>
+            Editar
+          </a>
+
+          <Popconfirm
+            title="Eliminar usuario"
+            description="¿Está seguro de eliminar el usuario?"
+            okText="Si"
+            cancelText="No"
+            onConfirm={() => removeUser(record.key)}
+          >
+            <a className="text-red-400">
+              Eliminar
+            </a>
+          </Popconfirm>
+        </div>
+      ),
+    }, 
+  ];
 
   async function getUsers(){
-    let data = await getAllUser(usersCollection);
+    //setTableLoading(true);
+    let data = await getAllUser();
     setDataColumn(data);
+    setTableLoading(false);
   }
 
-  useEffect(() => {
-    getUsers();
-  });
+  async function removeUser(id:any){
+    let data = await deleteUser(id);
+
+    let new_data = data_columns.filter(elm => elm.key != id);
+
+    setDataColumn(new_data);
+
+    notification.open({
+      message: 'Correcto',
+      description: 'Se elimino el usuario correctamente',
+    });
+  }
+
+  function saveUser(data:UserType){
+
+    if(!user_selected){
+      setDataColumn([...data_columns,data]);
+    }else{
+      let data_copy = data_columns;
+
+      for(let i in data_copy){
+        if(data_copy[i].key == data.key){
+          data_copy[i] = data;
+          setDataColumn([...data_copy]);
+          break;
+        }
+      }
+
+    }
+    setUserSelected(null);
+    setOpenModalNewUser(false)
+  }
+
+  function openModalNew(){
+    setUserSelected(null);
+    setOpenModalNewUser(true)
+  }
+
+  function openModalEdit(record:UserType){
+
+    setUserSelected(record);
+    setOpenModalNewUser(true)
+
+  }
+
+
+  useEffect(() => {getUsers();},[]);
 
   return (
     <main className="flex flex-col">
 
       <div className='flex flex-row justify-end'>
-        <button onClick={(e) => setOpenModalNewUser(true)} className='text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'>Nuevo usuario</button>
+        <button onClick={(e) => openModalNew()} className='text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'>Nuevo usuario</button>
       </div>
 
       <div className='flex flex-row mt-5'>
         
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead className="text-xs text-gray-700 uppercase dark:text-gray-400">
-                <tr>
-                  <th scope="col" className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
-                    Nombre
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Apellido
-                  </th>
-                  <th scope="col" className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
-                    Correo
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Empresa
-                  </th>
-                  <th scope="col" className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  data_columns.map((record,i) => <tr className="border-b border-gray-200 dark:border-gray-700" key={record.key}>
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
-                          {record.firstName}
-                        </th>
-                        <td className="px-6 py-4">
-                          {record.lastName}
-                        </td>
-                        <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
-                          {record.email}
-                        </td>
-                        <td className="px-6 py-4">
-                          {record.company}
-                        </td>
-                        <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
-                          -
-                        </td>
-                    </tr>
-                  )
-                }
-                
-              </tbody>
-          </table>
+
+          <Table dataSource={data_columns} columns={columns_example} pagination={false} loading={table_loading} /> 
         </div>
 
       </div>
 
-      <ModalNewUser open={open_modal_new_user} onCancel={(e) => {console.log("cancel");}} onOk={(e) => {console.log("Ok");}}/>
+      <ModalNewUser open={open_modal_new_user} onCancel={() => { setOpenModalNewUser(false)}} onOk={saveUser} record={user_selected}/>
     </main>
   )
 }

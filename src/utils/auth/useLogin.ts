@@ -13,5 +13,9 @@ export const useLogin = () => {
     return data;
   };
 
-  return { login };
+  const logout = () =>{
+    localStorage.removeItem("token");
+  }
+
+  return { login,logout };
 };

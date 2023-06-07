@@ -1,6 +1,8 @@
+import { UserType } from "@/api/users/users.model";
 
 export interface ModalNewUserProps {
     open: boolean,
-    onOk: any,
-    onCancel: any
+    onOk?: any,
+    onCancel: any,
+    record?: UserType
 }
