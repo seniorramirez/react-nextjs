@@ -11,10 +11,11 @@ export default function ProtectedRoute({ children } : any) {
   useEffect(() => {
     // Verificar si el usuario está autenticado, de lo contrario redirigir a la página de inicio de sesión
 
-    setAuthenticated(localStorage.getItem('token'))
-    if (!isAuthenticated) { 
+    let token = localStorage.getItem('token');
+    if (!token) { 
       router.push('/login');
     }
+    setAuthenticated(token);
   }, []);
 
   return (
