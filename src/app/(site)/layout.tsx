@@ -18,7 +18,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" data-lt-installed="false">
-      <body className="flex h-screen bg-gray-50 flex-1 flex flex-col" suppressHydrationWarning={true} >
+      <body className="flex h-screen bg-blue-500 flex-1 flex flex-col" suppressHydrationWarning={true} >
         <Navbar />
         <ProtectedRoute>
           <div className="wrapper p-6">
