@@ -8,6 +8,7 @@ import { Table,Popconfirm } from "antd";
 import { getAllUser,deleteUser } from "@/api/users/users";
 import { UserType } from "@/api/users/users.model";
 import { notification } from 'antd';
+import { UserDeleteOutlined, UserOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
 
 export default function IndexPage() {
 
@@ -44,7 +45,8 @@ export default function IndexPage() {
       dataIndex: "options", 
       render: (text:any,record:UserType) => (
         <div className='flex flex-row'>
-          <a className='mr-2 ' onClick={() => { openModalEdit(record)}}>
+          <a className='mr-2 flex flex-row items-center' onClick={() => { openModalEdit(record)}}>
+            <EditOutlined />
             Editar
           </a>
 
@@ -55,7 +57,8 @@ export default function IndexPage() {
             cancelText="No"
             onConfirm={() => removeUser(record.key)}
           >
-            <a className="text-red-400">
+            <a className="text-red-400 flex flex-row items-center">
+              <DeleteOutlined />
               Eliminar
             </a>
           </Popconfirm>
