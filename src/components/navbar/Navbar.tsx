@@ -31,7 +31,7 @@ export default function Navbar(){
         <nav className="border-b border-white/[0.08]">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <a  className="flex items-center">
-                    <span className="self-center text-xl font-semibold whitespace-nowrap text-white">Vectorial</span>
+                    <span className="self-center text-xl font-semibold whitespace-nowrap text-white">Entrevista</span>
                 </a>
                 <div className="flex items-center md:order-2">
                     <Dropdown menu={{ items,onClick: handleMenuClick }} placement="bottomRight" arrow trigger={['click']}>

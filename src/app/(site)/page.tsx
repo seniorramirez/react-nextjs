@@ -9,6 +9,8 @@ import { getAllUser,deleteUser } from "@/api/users/users";
 import { UserType } from "@/api/users/users.model";
 import { notification } from 'antd';
 import { UserDeleteOutlined, UserOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
+import Input from '@/components/input/Input';
+import tableFilter from '@/utils/helpers/table/TableFilters';
 
 export default function IndexPage() {
 
@@ -16,6 +18,7 @@ export default function IndexPage() {
   const [open_modal_new_user,setOpenModalNewUser] = useState(false);
   const [table_loading,setTableLoading] = useState(true);
   const [user_selected,setUserSelected] = useState<UserType|null>(null);
+  const [data_columns_backup,setDataColumnBackup] = useState<UserType[]>([]);
 
   const columns_example = [ 
     { 
@@ -71,6 +74,7 @@ export default function IndexPage() {
     //setTableLoading(true);
     let data = await getAllUser();
     setDataColumn(data);
+    setDataColumnBackup(data);
     setTableLoading(false);
   }
 
@@ -119,13 +123,27 @@ export default function IndexPage() {
 
   }
 
+  function filterTable(search:String){
+    if(search == '' || search.length == 0){
+      setDataColumn(data_columns_backup);
+    }else{
+      setDataColumn(tableFilter(data_columns,search,['first_name','last_name','email']));
+    }
+    
+  }
+
 
   useEffect(() => {getUsers();},[]);
 
   return (
     <main className="flex flex-col">
 
-      <div className='flex flex-row justify-end'>
+      <div className='flex flex-row justify-between'>
+        <Input
+          label="Filtro"
+          type="text"
+          onChange={(e:any) => filterTable(e.target.value)}
+        />
         <button onClick={(e) => openModalNew()} className='text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'>Nuevo usuario</button>
       </div>
 

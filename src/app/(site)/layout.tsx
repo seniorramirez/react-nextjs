@@ -7,8 +7,8 @@ import '@/assets/css/app.css';
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Prueba de react vectorial',
-  description: 'Una pagina para pruebas de vectorial',
+  title: 'Prueba de react',
+  description: 'Una pagina para pruebas',
 }
 
 export default function RootLayout({
@@ -20,17 +20,19 @@ export default function RootLayout({
   return (
     <html lang="en" data-lt-installed="true">
       <body className="flex h-screen bg-blue-700 flex-1 flex flex-col" suppressHydrationWarning={true} >
-        <Navbar />
+        <ProtectedRoute>
+          <Navbar />
 
-        <div className="wrapper p-6">
-          <div className="wrapper-box">
-            <div className="content p-6">
-              <ProtectedRoute>
-                {children}
-              </ProtectedRoute>
+          <div className="wrapper p-6">
+            <div className="wrapper-box">
+              <div className="content p-6">
+                
+                  {children}
+                
+              </div>
             </div>
           </div>
-        </div>
+        </ProtectedRoute>
       </body>
     </html>
   )

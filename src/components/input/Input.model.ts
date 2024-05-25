@@ -2,9 +2,9 @@
 export interface InputProps {
     label: string,
     type: string,
-    value: string,
+    value?: string,
     onChange?: any,
-    error: string,
+    error?: string,
     classname?: string,
     name?: string,
     customerror?: string
